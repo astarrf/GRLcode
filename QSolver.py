@@ -122,10 +122,9 @@ class MasterEqu():
         pauli_y.dtype = complex
         pauli_z.dtype = complex
         pauli_0.dtype = complex
-        rhos = [(pauli_0+pauli_x)/2, (pauli_0-pauli_x)/2,
-                (pauli_0+pauli_y)/2, (pauli_0-pauli_y)/2,
-                (pauli_0+pauli_z)/2, (pauli_0-pauli_z)/2]
-        return rhos
+        self.rhos = [(pauli_0+pauli_x)/2, (pauli_0-pauli_x)/2,
+                     (pauli_0+pauli_y)/2, (pauli_0-pauli_y)/2,
+                     (pauli_0+pauli_z)/2, (pauli_0-pauli_z)/2]
 
     def get_eigen_fid(self, glob_mtx, t_eval):
         N = self.N
@@ -159,12 +158,13 @@ class MasterEqu():
         # fidelity of all time
         fid_list = [np.abs(np.trace(glob_mtx @ glob_res_list[i]))
                     for i in range(len(t_eval))]
-        return fid_list
+        return fid_list, glob_res_list[-1]
 
-    def get_fid_basic_matrices(self, t_eval):
-        rhos = self.get_basic_states()
+    def get_fid_basic_matrices(self, rhos, t_eval):
         fid_list = []
+        current_rhos = []
         for rho0 in rhos:
-            fid = self.get_eigen_fid(rho0, t_eval)
+            fid, current_rho = self.get_eigen_fid(rho0, t_eval)
             fid_list.append(fid)
-        return fid_list
+            current_rhos.append(current_rho)
+        return fid_list, current_rhos
